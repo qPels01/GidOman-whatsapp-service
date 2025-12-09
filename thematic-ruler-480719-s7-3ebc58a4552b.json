@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "thematic-ruler-480719-s7",
+  "private_key_id": "3ebc58a4552b8e64d414709c46309473ad2574ba",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTNCOR9nbEvCYK\n6I8D624QxHujNdRdjRfp2GoOeEi3kbNtS3NPQ1cW4g1yqs/uHkE1FB3sb7vtGYUc\n0BK0Oj8ConGdoWKhZvSLfrd+d+CE1/vHhOms6Hs6wG1HFmOYzeL7VFrjNlZ3txB0\niYDkp5i4BkVXj7m1PwkTcDOsV6v68sztS2EG3jUBW1F0T10cxAzbgezN89P2o0w9\nX1uGANoayeXo4e1gm3E0tt+2zaVTM3d2usJQrWEFdjSf6GrIMnML9iFg/bDnBb0R\ncHmnsNlVb2fss3B7tn9X301jG2iWeiot5TtZzNMPN+hsSG5PhfozzfWnWMGUa0Ah\n8QhwekYfAgMBAAECggEAJpzCIgXSqd4SAG2K8/b/TN53EhwdwqqwZAa2QQX5mWHw\nUTt5jdSsX9kdB0k2MXzjg/41CExXKZ5ASUe7G6sIaQVkyyI9o29spvIYPu1QpUjN\nVak1hXCNUuzqLZRoyf9eD3/ZC/Abt9BGmF+pKmR/lalD1SHIHFw1XxHkyI3QudSD\nq6pIHxpE4goZcCsXEYSKzV8FMlWZArZeFel4Xhw6Z96qrLQh22JG2aIfAFScsrHi\n4potyNYTnyW00WZ2BxdussoF+/wyQdFrJ4W7+jYkmwCuVKmBC0M5dc1lw/nw/NsA\nkp2WcMkapoJrlPhbuYiYgw5uj7kM5D26N8hxMPovYQKBgQD5Nn9EjRJt8/Jcs6oz\nQO2w8VY2bTqIGxt7ebVnEAqHoGjfo3lJDRS7VF2kGcj8R9ZmFKzmv+Kv2sQ4Ihkg\n5vAEvyQRwAjJ1uTEYUtwGgBEqgyHfUo18We2wjcvNqNjbOQGPA7OwIhfvp1/0yS3\nuDCuJqxtYRobcfU4MmTmklSr4QKBgQDY9KScC6p3xCf12N+5MSv/uJrThkeI7+Ur\nRsxWhQM/mU4dSQ5LFvXtdm/CvtE1sSdBVwGjepLlGnij1G7toUH3HUEmLj959LDU\nxcqE5DW9QGjtSlVah9LShPOKE3n/T/tdWnRBc8TEWBG0iUl5VhsVbNen6h8kVsYa\nG4bFGN0x/wKBgGF0KjiIYhiVOMV/jKMWVNzIw0ntVOI8l3allYaEA1oeJGSv7JHg\nh6bpyuSNIMdm4DRzCVoC14alKe45h1ISfPGePWCjk8w6OKOC2Jkx0cEILnYdTJPj\nnwcc06+m0iXjQxgdDD1VlP6776M40jb11DOF9A+h1S++VIJxUnvH5UyBAoGBAKYJ\ntODn3LKEIMD6FV45z56JvZQctCqMzipsqH2elnnZ7fpjqti03cm6VpYISzx4M77B\nw7NFX56Ov71CGxMp0r44WV/LDTFcnuh35yIFNUt9O9A+j0wVnrcWoPwPI9LNd2Ze\nj5J38yMA86vjVaPSzi97eSA9AVBiSII6hs3Y1ZApAoGAQmKz8CuSOrRBolnzLrRP\nRe1HbaTdXf+fqhIBkA6DjA3oHzdz+05LTwoKmnrg3hX5HfTCQEh8lOIO3EUbx4e6\nFidhdtfXxJ9kC+DCGj287xq3QdT6KU1B+AsLFpyNOqdZ1YCy20QrQBZ+vMT5+gyR\ndoBH0M3nj8ce729oArY+JVI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "whatsapp-google-sheets@thematic-ruler-480719-s7.iam.gserviceaccount.com",
+  "client_id": "109335852253031027632",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/whatsapp-google-sheets%40thematic-ruler-480719-s7.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
