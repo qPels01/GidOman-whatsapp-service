@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "@green-api/whatsapp-api-client-js-v2": "^1.0.2",
+    "googleapis": "^105.0.0"
+  }
+}
