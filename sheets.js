@@ -4,7 +4,6 @@ import {authenticate} from '@google-cloud/local-auth';
 import {google} from 'googleapis';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
-
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 async function listMessages() {
@@ -13,14 +12,20 @@ async function listMessages() {
         keyfilePath: CREDENTIALS_PATH,
     });
     const sheets = google.sheets({version: 'v4', auth});
-
-    const table = sheets.spreadsheets.values.get({
+    const response = await sheets.spreadsheets.values.batchGet({
             spreadsheetId: '1hZOouz5RHwmx8SbJyQa957MG2DTa0UuOPecGsFQygbk',
-            range: 'F:F'
+            ranges: ['Лист1!F2:F','Лист1!H2:H','Лист1!J2:J','Лист1!P2:P'],
+            majorDimension: 'COLUMNS'
         });
-
-    const rows = table.data.values;
-    console.log(rows)
+    const {valueRanges} = response.data;
+    const toursData = {
+            tours: valueRanges[0]?.values?.[0] || [],
+            phoneNumber: valueRanges[1]?.values?.[0] || [],
+            pickUpHotel: valueRanges[2]?.values?.[0] || [],
+            mailDate: valueRanges[3]?.values?.[0] || []
+        };
+        
+    console.log(toursData)
 }
 
 await listMessages();
