@@ -12,6 +12,8 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// console.log(process.env.WHATSAPP_API_INSTANCE_ID)
+
 const credentialsMessenger = {
     id: process.env.WHATSAPP_API_INSTANCE_ID,
     token: process.env.WHATSAPP_API_TOKEN_INSTANCE
@@ -26,7 +28,7 @@ const credentialsSheets = {
 
 const sheetsValues = {
     sheetId: '1hZOouz5RHwmx8SbJyQa957MG2DTa0UuOPecGsFQygbk',
-    sheetRange: 'Лист1!B2:J',
+    sheetRange: 'Лист1!A2:J',
 }
 
 const messegerController = new MessageController(credentialsMessenger)
@@ -39,22 +41,26 @@ async function checkAndNotify() {
         console.log('No changes, nothing to send');
         return;
     }
+    try {
+        for (let tourData of data) {
+            const phone = tourData[6];
+            if (!phone) continue;
 
-    for (let tourData of data) {
-        const phone = tourData[6];
-        if (!phone) continue;
+            const tour = tourData[4] || '-';
+            const hotel = tourData[8] || '-';
+            const formattedTime = normalizeTime(tourData[7]);
+            const date = tourData[0] || '-'
 
-        const tour = tourData[4] || '-';
-        const hotel = tourData[8] || '-';
-        const formattedTime = normalizeTime(tourData[7]);
-        const date = tourData[0] || '-'
+            const rowId = crypto.createHash('md5').update(`${phone}|${date}|${tour}`).digest('hex');
 
-        const rowId = crypto.createHash('md5').update(`${phone}|${date}|${tour}`).digest('hex');
+            const text = getRandomTemplate(tour, hotel, date, formattedTime)
 
-        const text = getRandomTemplate(tour, hotel, date, formattedTime)
-
-        await messegerController.sendText(phone, text, rowId)
+            await messegerController.sendText(phone, text, rowId)
+        }
+    } catch (err) {
+        
     }
+
 }
 
 const INTERVAL_MS = 60 * 1000;
