@@ -58,16 +58,18 @@ export class MessageController{
         }
     }
 
-    async sendImage(phone, base64Data, fileName, caption = '', rowId) {
+    async sendImage(phone, fileURL, fileName, rowId) {
         const chatId = `${phone}@c.us`;
         try {
             if (!(await this.wasProcessed(rowId))){
                 await this.markProcessed(rowId);
                 return queue.add(() =>
-                    this.client.sendFileByUpload({
+                    this.client.sendFileByUrl({
                         chatId,
-                        file: { data: base64Data, fileName },
-                        caption,
+                        file: {
+                            url: fileURL,
+                            fileName: fileName
+                        }
                     })
                 );
             }
@@ -79,7 +81,6 @@ export class MessageController{
                 stack: error.stack,
             });
         }
-
     }
 }
 
@@ -90,4 +91,4 @@ export class MessageController{
 
 // const Messenger = new MessageController(credentials)
 
-// Messenger.sendText('79103577107', 'aSDA!', 'sadq23q112asd')
+// await Messenger.sendImage('79103577107', 'https://drive.google.com/uc?export=download&id=1VfnJJXIKeQ7bhC8ynDaTNW5iWkfRgetJ', '129u3y987shka.jpg', 'sadq23q112asd')

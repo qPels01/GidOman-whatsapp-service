@@ -2,6 +2,13 @@ import {authenticate} from '@google-cloud/local-auth';
 import {google} from 'googleapis';
 import isEqual from 'lodash.isequal';
 
+
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 export class SheetsController{
     prevData = null
 
@@ -31,7 +38,7 @@ export class SheetsController{
             
             const toursData = valueRanges[0].values
             const filteredTours = toursData.filter(row => 
-                row[0] && row[0] !== 'Cancelled' && row[1] && row[5] && row[7] && row[8] && row[9] && row[8] !== 'NA'
+                row[0] !== 'Cancelled' && row[5] && row[7] && row[9] && row[11] === 'ready'
             )
 
             if (!isEqual(filteredTours, this.prevData)) {
@@ -52,3 +59,20 @@ export class SheetsController{
         }
     }
 }
+
+// const credentialsSheets = {
+//     SCOPES: [
+//         'https://www.googleapis.com/auth/spreadsheets.readonly',
+//         ],
+//     CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
+// }
+
+// const sheetsValues = {
+//     sheetId: '1hZOouz5RHwmx8SbJyQa957MG2DTa0UuOPecGsFQygbk',
+//     sheetRange: 'Лист1!A2:K',
+// }
+
+// const sheetsController = new SheetsController(credentialsSheets)
+// const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
+// const s = data[0]
+// console.log(s[10].split(',').map(link => link.trim()))
