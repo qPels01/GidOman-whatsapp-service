@@ -47,10 +47,10 @@ async function checkAndNotify() {
             const image = tourData[5].trim()
 
             if (!image || image.lenght() === 0){
-                await messegerController.sendText(phone, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
+                await messegerController.sendTextMessage(phone, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
             }
 
-            await messegerController.sendText(phone, image, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
+            await messegerController.sendMessageWithImage(phone, image, tour, hotel, rowId, process.env.MESSAGE_IMAGE_TEMPLATE_ID)
         }
     } catch (err) {
         console.error(err) 
