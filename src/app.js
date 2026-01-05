@@ -19,7 +19,7 @@ const credentialsSheets = {
 
 const sheetsValues = {
     sheetId: process.env.SHEET_ID,
-    sheetRange: 'Working!G2:M',
+    sheetRange: 'Workings!G2:M',
 }
 
 const messegerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID)
@@ -44,9 +44,9 @@ async function checkAndNotify() {
 
             const rowId = crypto.createHash('md5').update(`${phone}|${tour}`).digest('hex');
 
-            const image = tourData[5].trim()
-
-            if (!image || image.lenght() === 0){
+            const image = tourData[5]?.trim()
+            console.log(image)
+            if (!image){
                 await messegerController.sendTextMessage(phone, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
             }
 
