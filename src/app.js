@@ -19,7 +19,7 @@ const credentialsSheets = {
 
 const sheetsValues = {
     sheetId: process.env.SHEET_ID,
-    sheetRange: 'Workings!G2:M',
+    sheetRange: 'Working!G2:M',
 }
 
 const messegerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID)
