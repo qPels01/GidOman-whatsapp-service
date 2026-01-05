@@ -1,35 +1,28 @@
 import { MessageController } from "./messenger.js";
 import { SheetsController } from "./sheets.js";
-import { generateLink } from "../utils/linkGenerator.js";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import crypto from 'crypto'
 import dotenv from 'dotenv';
-import { getRandomTemplate } from "../utils/tempaltesRandomazer.js";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const credentialsMessenger = {
-    id: process.env.WHATSAPP_API_INSTANCE_ID,
-    token: process.env.WHATSAPP_API_TOKEN_INSTANCE
-}
-
 const credentialsSheets = {
     SCOPES: [
         'https://www.googleapis.com/auth/spreadsheets.readonly',
         ],
-    CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
+    CREDENTIALS_PATH: join(__dirname, '../data/credentials.json'),
 }
 
 const sheetsValues = {
-    sheetId: '1hZOouz5RHwmx8SbJyQa957MG2DTa0UuOPecGsFQygbk',
-    sheetRange: 'Лист1!A2:L',
+    sheetId: process.env.SHEET_ID,
+    sheetRange: 'Working!G2:M',
 }
 
-const messegerController = new MessageController(credentialsMessenger)
+const messegerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID)
 const sheetsController = new SheetsController(credentialsSheets)
 
 async function checkAndNotify() {
@@ -43,33 +36,17 @@ async function checkAndNotify() {
 
     try {
         for (let tourData of data) {
-            const phone = tourData[7];
+            const phone = tourData[2];
             if (!phone) continue;
             
-            const tour = tourData[5] || '-';
-            const hotel = tourData[9] || '-';
+            const tour = tourData[0];
+            const hotel = tourData[4];
 
-            const date = tourData[0] || '-'
+            const rowId = crypto.createHash('md5').update(`${phone}|${tour}`).digest('hex');
 
-            const rowId = crypto.createHash('md5').update(`${phone}|${date}|${tour}`).digest('hex');
+            const image = tourData[5]
 
-            const text = getRandomTemplate(tour, hotel)
-            
-            const images = tourData[10].split(',').map(link => link.trim()) || '-'
-
-            await messegerController.sendText(phone, text, rowId)
-
-            if (images.length !== 0 || images !== '-'){
-                let idx = 1
-                for(let link of images){
-                    if (!link || link === '-') continue;
-                    const newLink = generateLink(link)
-                    const imageName = `image${idx}.jpg`
-                    const rowIdImage = crypto.createHash('md5').update(`${phone}|${date}|${link}`).digest('hex');
-                    await messegerController.sendImage(phone, newLink, imageName, rowIdImage)
-                    idx += 1
-                }   
-            }
+            await messegerController.sendText(phone, image, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
         }
     } catch (err) {
         console.error(err) 

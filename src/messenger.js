@@ -1,29 +1,23 @@
-import { GreenApiClient } from '@green-api/whatsapp-api-client-js-v2';
-import dotenv from 'dotenv';
-import PQueue from 'p-queue';
 import { promises as fs } from 'fs';
+import axios from 'axios'
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config({path: '../.env'});
-
 const FILE_PATH = join(__dirname, '../processed.json');
-
-const queue = new PQueue({ concurrency: 1, interval: 2000, intervalCap: 1 });
 
 export class MessageController{
     processedRows = new Set();
 
-    constructor(credentials){
-        this.credentials = credentials
-
-        this.client = new GreenApiClient({
-                idInstance: this.credentials.id,
-                apiTokenInstance: this.credentials.token
-            });
+    constructor(apiURL, apiKey, channelId){
+        this.apiURL = apiURL
+        this.apiKey = apiKey
+        this.channelId = channelId
     }
 
         async initProcessed() {
@@ -42,53 +36,84 @@ export class MessageController{
         return this.processedRows.has(rowId);
     }
 
-    async sendText(phone, text, rowId) {
-        const chatId = `${phone}@c.us`;
+        async sendText(phone, fileURL, tour, hotel, rowId, templateId) {
         try {
             if (!(await this.wasProcessed(rowId))){
-                await this.markProcessed(rowId);
-                return queue.add(() => this.client.sendMessage({ chatId, message: text }));
-            }
-        } catch (error) {
-            console.error('[MessageController] Ошибка при отправке сообщения:', {
-                message: error.message,
-                code: error.code,
-                stack: error.stack,
-            });
-        }
-    }
-
-    async sendImage(phone, fileURL, fileName, rowId) {
-        const chatId = `${phone}@c.us`;
-        try {
-            if (!(await this.wasProcessed(rowId))){
-                await this.markProcessed(rowId);
-                return queue.add(() =>
-                    this.client.sendFileByUrl({
-                        chatId,
-                        file: {
-                            url: fileURL,
-                            fileName: fileName
-                        }
-                    })
+                const req = await axios.post(this.apiURL,
+                    {
+                        channelId: this.channelId,
+                        chatType: "whatsapp",
+                        chatId: phone,
+                        templateId: templateId,
+                        templateValues: [fileURL, tour, hotel]
+                    }, 
+                    {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${this.apiKey}`,
+                        },
+                    }
                 );
+                if (req.status >= 200 && req.status < 300){
+                    console.log('Message sended:', req.status)
+                    await this.markProcessed(rowId);
+                    return true
+                }
             }
-
         } catch (error) {
-            console.error('[MessageController] Ошибка при отправке сообщения с изображением:', {
+            console.error('[MessageController] Message error:', {
                 message: error.message,
-                code: error.code,
+                code: error.response?.status,
                 stack: error.stack,
+                data: error.response?.data
             });
         }
     }
+    async sendImage(phone, fileURL, imageNumber, rowId, templateId) {
+        try {
+            if (!(await this.wasProcessed(rowId))){
+                const req = await axios.post(this.apiURL,
+                        {
+                            channelId: this.channelId,
+                            chatType: "whatsapp",
+                            chatId: phone,
+                            templateId: templateId,
+                            templateValues: [fileURL, String(imageNumber)]
+                        }, 
+                        {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${this.apiKey}`,
+                            },
+                        }
+                    );
+                    if (req.status >= 200 && req.status < 300){
+                        console.log('Message sended:', req.status)
+                        await this.markProcessed(rowId);
+                        return true
+                    }
+            }
+
+        } catch (error) {
+            console.error('[MessageController] Message with image error:', {
+                message: error.message,
+                code: error.response?.status,
+                stack: error.stack,
+                data: error.response?.data
+            });
+        }
+    }
+
+    async addUser(username, phone){
+
+    }
+
 }
 
-// const credentials = {
-//     id: process.env.WHATSAPP_API_INSTANCE_ID,
-//     token: process.env.WHATSAPP_API_TOKEN_INSTANCE
-// }
-
-// const Messenger = new MessageController(credentials)
-
-// await Messenger.sendImage('79103577107', 'https://drive.google.com/uc?export=download&id=1VfnJJXIKeQ7bhC8ynDaTNW5iWkfRgetJ', '129u3y987shka.jpg', 'sadq23q112asd')
+// const req = await axios.get('https://api.wazzup24.com/v3/users',                         {
+//                         headers: {
+//                             "Content-Type": "application/json",
+//                             "Authorization": `Bearer 422ab3ce10054ca59e27e660297c0764`,
+//                             },
+//                         })
+// console.log(req.data)

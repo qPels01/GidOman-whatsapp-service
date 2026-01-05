@@ -1,4 +1,4 @@
-// Work only with links like: https://drive.google.com/file/d/<fileID>/view?usp=drive_link
+// Работает ссылками типа: https://drive.google.com/file/d/<fileID>/view?usp=drive_link
 
 export function generateLink(link){
     const fileId = link.replace('https://drive.google.com/file/d/', '').split('/')[0]
