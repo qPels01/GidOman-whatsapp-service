@@ -9,7 +9,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const FILE_PATH = join(__dirname, '../processed.json');
+const FILE_PATH = join(__dirname, '../data/processed.json');
 
 export class MessageController{
     processedRows = new Set();

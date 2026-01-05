@@ -14,7 +14,7 @@ const credentialsSheets = {
     SCOPES: [
         'https://www.googleapis.com/auth/spreadsheets.readonly',
         ],
-    CREDENTIALS_PATH: join(__dirname, '../data/credentials.json'),
+    CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
 }
 
 const sheetsValues = {

@@ -15,18 +15,24 @@ export class SheetsController{
     }
 
     async authToSheets(){
-        return authenticate({
+        const auth  = new google.auth.GoogleAuth({
             scopes: this.credentials.SCOPES,
-            keyfilePath: this.credentials.CREDENTIALS_PATH,
+            keyFile: this.credentials.CREDENTIALS_PATH,
         });
+
+        this.sheets = google.sheets({
+            version: 'v4',
+            auth,
+        })
     }
 
     async pollSheets(sheetId, columnRanges) {
-        const auth = await this.authToSheets()
-        const sheets = google.sheets({version: 'v4', auth});
+        if (!this.sheets) {
+            await this.authToSheets();
+        }
 
         try {
-            const response = await sheets.spreadsheets.values.batchGet({
+            const response = await this.sheets.spreadsheets.values.batchGet({
                     spreadsheetId: sheetId,
                     ranges: columnRanges,
                     majorDimension: 'ROWS'
