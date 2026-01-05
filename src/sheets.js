@@ -1,4 +1,3 @@
-import {authenticate} from '@google-cloud/local-auth';
 import {google} from 'googleapis';
 import isEqual from 'lodash.isequal';
 import { fileURLToPath } from 'url';
@@ -42,7 +41,7 @@ export class SheetsController{
             
             const toursData = valueRanges[0].values
             const filteredTours = toursData.filter(row => 
-                row[0] && row[2] && row[4] && row[5]  && row[6] === 'ready'
+                row[0] && row[2] && row[4] && typeof row[6] === "string" && row[6].trim().toLowerCase() === "ready"
             )
 
             if (!isEqual(filteredTours, this.prevData)) {
@@ -63,20 +62,3 @@ export class SheetsController{
         }
     }
 }
-
-const credentialsSheets = {
-    SCOPES: [
-        'https://www.googleapis.com/auth/spreadsheets.readonly',
-        ],
-    CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
-}
-
-const sheetsValues = {
-    sheetId: '1ZjpCe3Q_QRIl503xvD8Cq2L84r3JrEPOSIGxhhOwmLc',
-    sheetRange: 'Working!G2:M',
-}
-
-const sheetsController = new SheetsController(credentialsSheets)
-const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
-const one = data
-console.log(one)

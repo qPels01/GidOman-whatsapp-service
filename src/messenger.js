@@ -36,7 +36,7 @@ export class MessageController{
         return this.processedRows.has(rowId);
     }
 
-        async sendText(phone, fileURL, tour, hotel, rowId, templateId) {
+        async sendTextMessage(phone, tour, hotel, rowId, templateId) {
         try {
             if (!(await this.wasProcessed(rowId))){
                 const req = await axios.post(this.apiURL,
@@ -45,7 +45,7 @@ export class MessageController{
                         chatType: "whatsapp",
                         chatId: phone,
                         templateId: templateId,
-                        templateValues: [fileURL, tour, hotel]
+                        templateValues: [tour, hotel]
                     }, 
                     {
                     headers: {
@@ -69,7 +69,8 @@ export class MessageController{
             });
         }
     }
-    async sendImage(phone, fileURL, imageNumber, rowId, templateId) {
+    
+    async sendMessageWithImage(phone, fileURL, tour, hotel, rowId, templateId) {
         try {
             if (!(await this.wasProcessed(rowId))){
                 const req = await axios.post(this.apiURL,
@@ -78,7 +79,7 @@ export class MessageController{
                             chatType: "whatsapp",
                             chatId: phone,
                             templateId: templateId,
-                            templateValues: [fileURL, String(imageNumber)]
+                            templateValues: [fileURL, tour, hotel]
                         }, 
                         {
                         headers: {

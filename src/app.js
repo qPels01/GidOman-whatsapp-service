@@ -38,13 +38,17 @@ async function checkAndNotify() {
         for (let tourData of data) {
             const phone = tourData[2];
             if (!phone) continue;
-            
+
             const tour = tourData[0];
             const hotel = tourData[4];
 
             const rowId = crypto.createHash('md5').update(`${phone}|${tour}`).digest('hex');
 
-            const image = tourData[5]
+            const image = tourData[5].trim()
+
+            if (!image || image.lenght() === 0){
+                await messegerController.sendText(phone, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
+            }
 
             await messegerController.sendText(phone, image, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
         }
