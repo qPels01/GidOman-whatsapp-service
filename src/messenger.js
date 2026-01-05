@@ -109,11 +109,3 @@ export class MessageController{
     }
 
 }
-
-// const req = await axios.get('https://api.wazzup24.com/v3/users',                         {
-//                         headers: {
-//                             "Content-Type": "application/json",
-//                             "Authorization": `Bearer 422ab3ce10054ca59e27e660297c0764`,
-//                             },
-//                         })
-// console.log(req.data)
