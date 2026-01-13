@@ -72,41 +72,6 @@ export class MessageController{
         }
     }
     
-    async sendMessageWithImage(phone, fileURL, tour, hotel, rowId, templateId) {
-        try {
-            if (!(await this.wasProcessed(rowId))){
-                const req = await axios.post(this.apiURL,
-                        {
-                            channelId: this.channelId,
-                            chatType: "whatsapp",
-                            chatId: phone,
-                            templateId: templateId,
-                            templateValues: [fileURL, tour, hotel]
-                        }, 
-                        {
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${this.apiKey}`,
-                            },
-                        }
-                    );
-                    if (req.status >= 200 && req.status < 300){
-                        console.log('Message sended:', req.status)
-                        await this.markProcessed(rowId);
-                        return true
-                    }
-            }
-
-        } catch (error) {
-            console.error('[MessageController] Message with image error:', {
-                message: error.message,
-                code: error.response?.status,
-                stack: error.stack,
-                data: error.response?.data
-            });
-        }
-    }
-
     async addUser(username, phone){
 
     }
