@@ -39,7 +39,7 @@ export class SheetsController{
 
             const {valueRanges} = response?.data;
             
-            const toursData = valueRanges[0]?.values;
+            const toursData = valueRanges[0]?.values ?? [];
 
             if (toursData?.length === 0) return null;
  

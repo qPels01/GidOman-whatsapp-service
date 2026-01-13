@@ -36,7 +36,9 @@ export class MessageController{
         return this.processedRows.has(rowId);
     }
 
-        async sendTextMessage(phone, tour, hotel, rowId, templateId) {
+    async sendTemplate({phone, fileURL, tour, hotel, rowId, templateId}) {
+        const values = fileURL ? [fileURL, tour, hotel] : [tour, hotel]
+
         try {
             if (!(await this.wasProcessed(rowId))){
                 const req = await axios.post(this.apiURL,
@@ -45,7 +47,7 @@ export class MessageController{
                         chatType: "whatsapp",
                         chatId: phone,
                         templateId: templateId,
-                        templateValues: [tour, hotel]
+                        templateValues: values
                     }, 
                     {
                     headers: {
@@ -55,7 +57,7 @@ export class MessageController{
                     }
                 );
                 if (req.status >= 200 && req.status < 300){
-                    console.log('Message sended:', req.status)
+                    console.log('Message sent:', req.status)
                     await this.markProcessed(rowId);
                     return true
                 }
