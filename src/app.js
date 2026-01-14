@@ -45,12 +45,17 @@ async function checkAndNotify() {
             const rowId = crypto.createHash('md5').update(`${phone}|${tour}`).digest('hex');
 
             const image = tourData[5]?.trim()
-            console.log(image)
-            if (!image){
-                await messegerController.sendTextMessage(phone, tour, hotel, rowId, process.env.MESSAGE_TEMPLATE_ID)
-            }
-
-            await messegerController.sendMessageWithImage(phone, image, tour, hotel, rowId, process.env.MESSAGE_IMAGE_TEMPLATE_ID)
+            
+            await messegerController.sendTemplate(
+                {   
+                    phone, 
+                    tour, 
+                    hotel,
+                    fileURL: image,
+                    rowId, 
+                    templateId: image ? process.env.MESSAGE_IMAGE_TEMPLATE_ID : process.env.MESSAGE_TEMPLATE_ID,
+                }
+            )
         }
     } catch (err) {
         console.error(err) 

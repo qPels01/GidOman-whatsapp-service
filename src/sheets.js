@@ -39,9 +39,9 @@ export class SheetsController{
 
             const {valueRanges} = response?.data;
             
-            const toursData = valueRanges[0]?.values;
+            const toursData = valueRanges[0]?.values ?? [];
 
-            if (toursData.length === 0) return null;
+            if (toursData?.length === 0) return null;
 
             const filteredTours = toursData.filter(row => 
                 row[0] && row[2] && row[4] && typeof row[6] === "string" && row[6].trim().toLowerCase() === "ready"
