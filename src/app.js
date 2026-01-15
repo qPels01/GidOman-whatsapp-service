@@ -47,7 +47,7 @@ async function checkAndNotify() {
             const imageRaw = tourData[5]?.trim()
             const isUrl = /^https?:\/\/\S+\.(jpg|jpeg|png|webp)(\?\S*)?$/i.test(imageRaw);
 
-            print({rowId, phone})
+            console.log({rowId, phone})
             await messegerController.sendTemplate(
                 {   
                     phone, 
