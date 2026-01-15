@@ -44,16 +44,17 @@ async function checkAndNotify() {
 
             const rowId = crypto.createHash('md5').update(`${phone}|${tour}`).digest('hex');
 
-            const image = tourData[5]?.trim()
-            
+            const imageRaw = tourData[5]?.trim()
+            const isUrl = /^https?:\/\/\S+\.(jpg|jpeg|png|webp)(\?\S*)?$/i.test(imageRaw);
+
             await messegerController.sendTemplate(
                 {   
                     phone, 
                     tour, 
                     hotel,
-                    fileURL: image,
+                    fileURL: isUrl ? imageRaw : "",
                     rowId, 
-                    templateId: image ? process.env.MESSAGE_IMAGE_TEMPLATE_ID : process.env.MESSAGE_TEMPLATE_ID,
+                    templateId: isUrl ? process.env.MESSAGE_IMAGE_TEMPLATE_ID : process.env.MESSAGE_TEMPLATE_ID,
                 }
             )
         }
