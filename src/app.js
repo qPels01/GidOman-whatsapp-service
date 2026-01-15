@@ -42,11 +42,12 @@ async function checkAndNotify() {
             const tour = tourData[0];
             const hotel = tourData[4];
 
-            const rowId = crypto.createHash('md5').update(`${phone}|${tour}`).digest('hex');
+            const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
 
             const imageRaw = tourData[5]?.trim()
             const isUrl = /^https?:\/\/\S+\.(jpg|jpeg|png|webp)(\?\S*)?$/i.test(imageRaw);
 
+            print({rowId, phone})
             await messegerController.sendTemplate(
                 {   
                     phone, 
