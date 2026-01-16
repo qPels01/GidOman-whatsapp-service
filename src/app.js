@@ -19,7 +19,7 @@ const credentialsSheets = {
 
 const sheetsValues = {
     sheetId: process.env.SHEET_ID,
-    sheetRange: 'Working!G2:M',
+    sheetRange: 'Working!C2:M',
 }
 
 const messegerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID)
@@ -36,18 +36,18 @@ async function checkAndNotify() {
 
     try {
         for (let tourData of data) {
-            const phone = tourData[2];
+            const phone = tourData[6];
             if (!phone) continue;
 
-            const tour = tourData[0];
-            const hotel = tourData[4];
+            const tour = tourData[4];
+            const hotel = tourData[8];
 
             const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
 
-            const imageRaw = tourData[5]?.trim()
+            const imageRaw = tourData[9]?.trim()
             const isUrl = /^https?:\/\/\S+\.(jpg|jpeg|png|webp)(\?\S*)?$/i.test(imageRaw);
 
-            console.log({rowId, phone})
+            console.log({rowId, phone}, new Date)
             await messegerController.sendTemplate(
                 {   
                     phone, 
