@@ -36,9 +36,9 @@ export class MessageController{
         return this.processedRows.has(rowId);
     }
 
-    async sendTemplate({phone, fileURL, tour, hotel, rowId, templateId}) {
-        const values = fileURL ? [fileURL, tour, hotel] : [tour, hotel]
-
+    async sendTemplate({phone, hotel, rowId, templateId, website, review}) {
+        const values = [hotel]
+        
         try {
             if (!(await this.wasProcessed(rowId))){
                 const req = await axios.post(this.apiURL,

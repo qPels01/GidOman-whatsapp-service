@@ -44,7 +44,7 @@ export class SheetsController{
             if (toursData?.length === 0) return null;
 
             const filteredTours = toursData.filter(row => 
-                row[0] && row[1] && row[4] && row[6] && row[8] && typeof row[10] === "string" && row[10].trim().toLowerCase() === "ready"
+                row[0] && row[1] && row[4] && row[6] && row[8] && typeof row[10] === "string" && row[10].trim().toLowerCase() === "ready" && row[11]
             )
 
             if (!isEqual(filteredTours, this.prevData)) {
