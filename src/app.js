@@ -58,7 +58,7 @@ async function checkAndNotify() {
 
             const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
 
-            const hasMeetingPoint = hotel.toLowerCase().includes("meeting point");
+            const hasMeetingPoint = hotel.toLowerCase().includes("meeting point") || !hotel;
 
             const matchKey = Object.keys(toursList).find((k) => tourName.includes(k));
             if (!matchKey) {
