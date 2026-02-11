@@ -55,27 +55,33 @@ async function checkAndNotify() {
 
             const tourName = tourData[4] ?? ""; 
             const hotel = tourData[8] ?? "";
-            const website = tourData[11] ?? "";
-            const review = tourData[12] ?? "";
+            const website = tourData[12] ?? "";
+            const review = tourData[11] ?? "";
 
             const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
 
             const hasMeetingPoint = hotel.toLowerCase().includes("meeting point") || !hotel;
 
-            const matchKey = sorter.bestMatchKey(tourName)
+            const matchKey = sorter.bestMatchKey(tourName);
             if (!matchKey) {
                 console.warn("No tour config for:", tourName);
                 continue;
             }
 
-            console.log({key: matchKey, phone: phone})
             const cfg = toursList[matchKey];
 
             const templateId = hasMeetingPoint
                 ? cfg.with_meeting_point.templateID
                 : cfg.with_pickup_hotel.templateID;
+            
+
+            if (review === "How was the tour?"){
+                await messegerController.sendTemplate({ phone, hotel, rowId, templateId: process.env.REVIEW_MESSAGE, review, website, });
+                return
+            }
 
             await messegerController.sendTemplate({ phone, hotel, rowId, templateId, review, website, });
+
         }
     } catch (err) {
         console.error(err) 
