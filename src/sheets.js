@@ -2,6 +2,9 @@ import {google} from 'googleapis';
 import isEqual from 'lodash.isequal';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,18 +69,18 @@ export class SheetsController{
     }
 }
 
-// const credentialsSheets = {
-//     SCOPES: [
-//         'https://www.googleapis.com/auth/spreadsheets.readonly',
-//         ],
-//     CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
-// }
+const credentialsSheets = {
+    SCOPES: [
+        'https://www.googleapis.com/auth/spreadsheets.readonly',
+        ],
+    CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
+}
 
-// const sheetsValues = {
-//     sheetId: '1ZjpCe3Q_QRIl503xvD8Cq2L84r3JrEPOSIGxhhOwmLc',
-//     sheetRange: 'Working!C2:N',
-// }
+const sheetsValues = {
+    sheetId: process.env.SHEET_ID,
+    sheetRange: 'Working!C2:N',
+}
 
-// const sheetsController = new SheetsController(credentialsSheets)
-// const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
-// console.log(data)
+const sheetsController = new SheetsController(credentialsSheets)
+const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
+console.log(data)
