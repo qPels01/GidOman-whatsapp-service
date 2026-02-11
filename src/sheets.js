@@ -69,18 +69,18 @@ export class SheetsController{
     }
 }
 
-const credentialsSheets = {
-    SCOPES: [
-        'https://www.googleapis.com/auth/spreadsheets.readonly',
-        ],
-    CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
-}
+// const credentialsSheets = {
+//     SCOPES: [
+//         'https://www.googleapis.com/auth/spreadsheets.readonly',
+//         ],
+//     CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
+// }
 
-const sheetsValues = {
-    sheetId: process.env.SHEET_ID,
-    sheetRange: 'Working!C2:N',
-}
+// const sheetsValues = {
+//     sheetId: process.env.SHEET_ID,
+//     sheetRange: 'Working!C2:N',
+// }
 
-const sheetsController = new SheetsController(credentialsSheets)
-const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
-console.log(data)
+// const sheetsController = new SheetsController(credentialsSheets)
+// const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
+// console.log(data)
