@@ -75,14 +75,7 @@ async function checkAndNotify() {
                 ? cfg.with_meeting_point.templateID
                 : cfg.with_pickup_hotel.templateID;
 
-            await messegerController.sendTemplate({
-                phone,
-                hotel,
-                rowId,
-                templateId,
-                review,
-                website,
-            });
+            await messegerController.sendTemplate({ phone, hotel, rowId, templateId, review, website, });
         }
     } catch (err) {
         console.error(err) 

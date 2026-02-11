@@ -57,7 +57,7 @@ export class MessageController{
                     }
                 );
                 if (req.status >= 200 && req.status < 300){
-                    console.log('Message sent:', req.status)
+                    console.log({message: "message sent", status: req.status, date: String(new Date())})
                     await this.markProcessed(rowId);
                     return true
                 }
