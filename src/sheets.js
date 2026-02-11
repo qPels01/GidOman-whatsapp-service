@@ -44,7 +44,7 @@ export class SheetsController{
             if (toursData?.length === 0) return null;
 
             const filteredTours = toursData.filter(row => 
-                row[0] && row[1] && row[4] && row[6] && typeof row[10] === "string" && row[10].trim().toLowerCase() === "ready" && row[11]
+                row[0] && row[1] && row[4] && row[6] && typeof row[10] === "string" && row[10].trim().toLowerCase() === "ready"
             )
 
             if (!isEqual(filteredTours, this.prevData)) {
@@ -65,3 +65,19 @@ export class SheetsController{
         }
     }
 }
+
+// const credentialsSheets = {
+//     SCOPES: [
+//         'https://www.googleapis.com/auth/spreadsheets.readonly',
+//         ],
+//     CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
+// }
+
+// const sheetsValues = {
+//     sheetId: '1ZjpCe3Q_QRIl503xvD8Cq2L84r3JrEPOSIGxhhOwmLc',
+//     sheetRange: 'Working!C2:N',
+// }
+
+// const sheetsController = new SheetsController(credentialsSheets)
+// const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
+// console.log(data)

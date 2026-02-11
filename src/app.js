@@ -2,6 +2,7 @@ import { MessageController } from "./messenger.js";
 import { SheetsController } from "./sheets.js";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { TourSorter } from "../utils/tour.sort.js";
 import * as fs from 'node:fs/promises';
 import crypto from 'crypto'
 import dotenv from 'dotenv';
@@ -28,21 +29,22 @@ const sheetsValues = {
 const messegerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID)
 const sheetsController = new SheetsController(credentialsSheets)
 
+let toursList = {};
+
+try {
+    toursList = JSON.parse(await fs.readFile(TOURS_PATH, 'utf8'));
+} catch (error) {
+    console.error("Error with reading JSON", error);
+}
+
+const sorter = new TourSorter(toursList)
+
 async function checkAndNotify() {
     const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
-    console.log(data)
+    // console.log(data)
 
     if (!data){
         console.log('No changes, nothing to send');
-        return;
-    }
-
-    let toursList = {};
-
-    try {
-        toursList = JSON.parse(await fs.readFile(TOURS_PATH, 'utf8'));
-    } catch (error) {
-        console.error("Error with reading JSON", error);
         return;
     }
 
@@ -60,12 +62,13 @@ async function checkAndNotify() {
 
             const hasMeetingPoint = hotel.toLowerCase().includes("meeting point") || !hotel;
 
-            const matchKey = Object.keys(toursList).find((k) => tourName.includes(k));
+            const matchKey = sorter.bestMatchKey(tourName)
             if (!matchKey) {
-            console.warn("No tour config for:", tourName);
-            continue;
+                console.warn("No tour config for:", tourName);
+                continue;
             }
 
+            console.log({key: matchKey, phone: phone})
             const cfg = toursList[matchKey];
 
             const templateId = hasMeetingPoint
