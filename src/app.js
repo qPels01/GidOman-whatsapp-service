@@ -74,13 +74,19 @@ async function checkAndNotify() {
                 ? cfg.with_meeting_point.templateID
                 : cfg.with_pickup_hotel.templateID;
             
-
+            let result
+                
             if (review === "How was the tour?"){
-                await messegerController.sendTemplate({ phone, hotel, rowId, templateId: process.env.REVIEW_MESSAGE, review, website, });
-                return
+                result = await messegerController.sendTemplate({ phone, hotel, rowId, templateId: process.env.REVIEW_MESSAGE, review, website, });
+            } else{
+                result = await messegerController.sendTemplate({ phone, hotel, rowId, templateId, review, website, });
             }
 
-            await messegerController.sendTemplate({ phone, hotel, rowId, templateId, review, website, });
+
+            if (!result){
+                console.warn("Message was not sent", { rowId, phone });
+                continue;
+            }
 
         }
     } catch (err) {
