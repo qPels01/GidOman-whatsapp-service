@@ -41,7 +41,6 @@ const sorter = new TourSorter(toursList)
 
 async function checkAndNotify() {
     const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
-    // console.log(data)
 
     if (!data){
         console.log('No changes, nothing to send');
@@ -55,10 +54,8 @@ async function checkAndNotify() {
 
             const tourName = tourData[4] ?? ""; 
             const hotel = tourData[8] ?? "";
-            const website = tourData[12] ?? "";
+            const ready = tourData[10] ?? ""
             const review = tourData[11] ?? "";
-
-            const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
 
             const hasMeetingPoint = hotel.toLowerCase().includes("meeting point") || !hotel;
 
@@ -74,25 +71,34 @@ async function checkAndNotify() {
                 ? cfg.with_meeting_point.templateID
                 : cfg.with_pickup_hotel.templateID;
             
-            let result
-                
-            if (review === "How was the tour?"){
-                result = await messegerController.sendTemplate({ phone, hotel, rowId, templateId: process.env.REVIEW_MESSAGE, review, website, });
-            } else{
-                result = await messegerController.sendTemplate({ phone, hotel, rowId, templateId, review, website, });
-            }
+            if (typeof ready === "string" && ready.trim().toLowerCase() === "ready"){
+                const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
+                // console.log("is ready tour!")
+                await messegerController.sendTemplate({ phone, hotel, rowId, templateId });
+            } else continue
 
-
-            if (!result){
-                console.warn("Message was not sent", { rowId, phone });
-                continue;
-            }
+            if (review){
+                if (review === "How was the tour?") {
+                    const rowId = crypto.createHash('md5').update(JSON.stringify(tourData) + "How was the tour?").digest('hex');
+                    await messegerController.sendTemplate({ phone, rowId, templateId: process.env.REVIEW_MESSAGE });
+                    // console.log("is review tour!",process.env.REVIEW_MESSAGE)
+                } else if (review === "Thank you") {
+                    const rowId = crypto.createHash('md5').update(JSON.stringify(tourData) + "Thank you").digest('hex');
+                    // console.log("is thankyou tour!")
+                    await messegerController.sendTemplate({ phone, rowId, templateId: process.env.THANKYOU_MESSAGE });
+                } else continue
+            } 
 
         }
     } catch (err) {
-        console.error(err) 
+        if (err.name === "TypeError"){
+            if (err.message === "Cannot read properties of undefined (reading 'templateID')"){
+                console.error("No tamplate for tour")
+            }
+        } else{
+            console.error(err)
+        }
     }
-
 }
 
 const INTERVAL_MS = 60 * 1000;
