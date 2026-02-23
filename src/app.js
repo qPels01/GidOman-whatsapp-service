@@ -54,6 +54,8 @@ async function checkAndNotify() {
             const phone = tourData[6];
             if (!phone) continue;
 
+            const custumerName = tourData[1] ?? "";
+            const date = tourData[0] ?? "";
             const tourName = tourData[4] ?? ""; 
             const hotel = tourData[8] ?? "";
             const ready = tourData[10] ?? ""
@@ -73,20 +75,22 @@ async function checkAndNotify() {
                 ? cfg.with_meeting_point.templateID
                 : cfg.with_pickup_hotel.templateID;
             
+            const idSault = phone + hotel + tourName + custumerName + date
+
             if (typeof ready === "string" && ready.trim().toLowerCase() === "ready"){
-                // console.log("is ready tour!", tourName)
-                const rowId = createHash('md5').update(JSON.stringify(tourData)).digest('hex');
+                console.log("is ready tour!", tourName)
+                const rowId = createHash('md5').update(idSault + "message").digest('hex');
                 await messegerController.sendTemplate({ phone, hotel, rowId, templateId });
             }
 
             if (review){
                 if (review === "How was the tour?") {
-                    // console.log("is review tour!")
-                    const rowId = createHash('md5').update(JSON.stringify(tourData) + "How was the tour?").digest('hex');
+                    console.log("is review tour!")
+                    const rowId = createHash('md5').update(idSault + "How was the tour?").digest('hex');
                     await messegerController.sendTemplate({ phone, rowId, templateId: process.env.REVIEW_MESSAGE });
                 } else if (review === "Thank you") {
-                    // console.log("is thankyou tour!")
-                    const rowId = createHash('md5').update(JSON.stringify(tourData) + "Thank you").digest('hex');
+                    console.log("is thankyou tour!")
+                    const rowId = createHash('md5').update(idSault + "Thank you").digest('hex');
                     await messegerController.sendTemplate({ phone, rowId, templateId: process.env.THANKYOU_MESSAGE });
                 }
             } 
