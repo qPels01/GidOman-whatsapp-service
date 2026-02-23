@@ -4,8 +4,9 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { TourSorter } from "../utils/tour.sort.js";
 import * as fs from 'node:fs/promises';
-import crypto from 'crypto'
+import { createHash } from "node:crypto";
 import dotenv from 'dotenv';
+import { read } from "node:fs";
 
 dotenv.config();
 
@@ -23,7 +24,7 @@ const credentialsSheets = {
 
 const sheetsValues = {
     sheetId: process.env.SHEET_ID,
-    sheetRange: 'Working!C2:N',
+    sheetRange: ['direct booking!C2:N'],
 }
 
 const messegerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID)
@@ -49,6 +50,7 @@ async function checkAndNotify() {
 
     try {
         for (let tourData of data) {
+            // console.log("len:", tourData.length, "ready:", tourData[10], "review:", tourData[11]);
             const phone = tourData[6];
             if (!phone) continue;
 
@@ -72,21 +74,21 @@ async function checkAndNotify() {
                 : cfg.with_pickup_hotel.templateID;
             
             if (typeof ready === "string" && ready.trim().toLowerCase() === "ready"){
-                const rowId = crypto.createHash('md5').update(JSON.stringify(tourData)).digest('hex');
-                // console.log("is ready tour!")
+                // console.log("is ready tour!", tourName)
+                const rowId = createHash('md5').update(JSON.stringify(tourData)).digest('hex');
                 await messegerController.sendTemplate({ phone, hotel, rowId, templateId });
-            } else continue
+            }
 
             if (review){
                 if (review === "How was the tour?") {
-                    const rowId = crypto.createHash('md5').update(JSON.stringify(tourData) + "How was the tour?").digest('hex');
+                    // console.log("is review tour!")
+                    const rowId = createHash('md5').update(JSON.stringify(tourData) + "How was the tour?").digest('hex');
                     await messegerController.sendTemplate({ phone, rowId, templateId: process.env.REVIEW_MESSAGE });
-                    // console.log("is review tour!",process.env.REVIEW_MESSAGE)
                 } else if (review === "Thank you") {
-                    const rowId = crypto.createHash('md5').update(JSON.stringify(tourData) + "Thank you").digest('hex');
                     // console.log("is thankyou tour!")
+                    const rowId = createHash('md5').update(JSON.stringify(tourData) + "Thank you").digest('hex');
                     await messegerController.sendTemplate({ phone, rowId, templateId: process.env.THANKYOU_MESSAGE });
-                } else continue
+                }
             } 
 
         }

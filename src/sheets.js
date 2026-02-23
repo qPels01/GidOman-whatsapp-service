@@ -37,9 +37,9 @@ export class SheetsController{
             const response = await this.sheets.spreadsheets.values.batchGet({
                     spreadsheetId: sheetId,
                     ranges: columnRanges,
-                    majorDimension: 'ROWS'
+                    majorDimension: 'ROWS',
                 });
-
+                
             const {valueRanges} = response?.data;
 
             const toursData = valueRanges[0]?.values ?? [];
@@ -47,14 +47,14 @@ export class SheetsController{
             if (toursData?.length === 0) return null;
 
             const filteredTours = toursData.filter(row => 
-                row[0] && row[1] && row[4] && row[6]
+                row[0] && row[1] && row[4] && row[6] && (row[10] || row[11])  
             )
 
             if (!isEqual(filteredTours, this.prevData)) {
                 this.prevData = filteredTours;
                 return filteredTours;
             }
-
+            
             return null;
 
         } catch (error) {
@@ -64,7 +64,7 @@ export class SheetsController{
                 stack: error.stack,
             });
 
-            return null
+        return null
         }
     }
 }
