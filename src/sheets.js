@@ -1,23 +1,15 @@
-import {google} from 'googleapis';
+import { google } from 'googleapis';
 import isEqual from 'lodash.isequal';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import dotenv from 'dotenv';
 
-dotenv.config();
+export class SheetsController {
+    prevData = null;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-export class SheetsController{
-    prevData = null
-
-    constructor(credentials){
-        this.credentials = credentials
+    constructor(credentials) {
+        this.credentials = credentials;
     }
 
-    async authToSheets(){
-        const auth  = new google.auth.GoogleAuth({
+    async authToSheets() {
+        const auth = new google.auth.GoogleAuth({
             scopes: this.credentials.SCOPES,
             keyFile: this.credentials.CREDENTIALS_PATH,
         });
@@ -25,7 +17,7 @@ export class SheetsController{
         this.sheets = google.sheets({
             version: 'v4',
             auth,
-        })
+        });
     }
 
     async pollSheets(sheetId, columnRanges) {
@@ -35,28 +27,25 @@ export class SheetsController{
 
         try {
             const response = await this.sheets.spreadsheets.values.batchGet({
-                    spreadsheetId: sheetId,
-                    ranges: columnRanges,
-                    majorDimension: 'ROWS',
-                });
-                
-            const {valueRanges} = response?.data;
+                spreadsheetId: sheetId,
+                ranges: columnRanges,
+                majorDimension: 'ROWS',
+            });
+
+            const { valueRanges } = response?.data;
 
             const toursData = valueRanges[0]?.values ?? [];
 
             if (toursData?.length === 0) return null;
 
-            const filteredTours = toursData.filter(row => 
-                row[0] && row[1] && row[4] && row[6] && (row[10] || row[11])  
-            )
+            const filteredTours = toursData.filter((row) => row[0] && row[1] && row[4] && row[6] && (row[10] || row[11]));
 
             if (!isEqual(filteredTours, this.prevData)) {
                 this.prevData = filteredTours;
                 return filteredTours;
             }
-            
-            return null;
 
+            return toursData;
         } catch (error) {
             console.error('[SheetsController] Ошибка при чтении таблицы:', {
                 message: error.message,
@@ -64,23 +53,7 @@ export class SheetsController{
                 stack: error.stack,
             });
 
-        return null
+            return null;
         }
     }
 }
-
-// const credentialsSheets = {
-//     SCOPES: [
-//         'https://www.googleapis.com/auth/spreadsheets.readonly',
-//         ],
-//     CREDENTIALS_PATH: join(__dirname, '../credentials.json'),
-// }
-
-// const sheetsValues = {
-//     sheetId: "14rB6KTD8z0YdNhzJPRlpVclon3c_9e2dXFCiFMAircU",
-//     sheetRange: 'Working!C2:N',
-// }
-
-// const sheetsController = new SheetsController(credentialsSheets)
-// const data = await sheetsController.pollSheets(sheetsValues.sheetId, sheetsValues.sheetRange)
-// console.log(data.toursForReviews)

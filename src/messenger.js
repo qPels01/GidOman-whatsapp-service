@@ -1,26 +1,23 @@
 import { promises as fs } from 'fs';
-import axios from 'axios'
+import axios from 'axios';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const FILE_PATH = join(__dirname, '../data/processed.json');
 
-export class MessageController{
+export class MessageController {
     processedRows = new Set();
 
-    constructor(apiURL, apiKey, channelId){
-        this.apiURL = apiURL
-        this.apiKey = apiKey
-        this.channelId = channelId
+    constructor(apiURL, apiKey, channelId) {
+        this.apiURL = apiURL;
+        this.apiKey = apiKey;
+        this.channelId = channelId;
     }
 
-        async initProcessed() {
+    async initProcessed() {
         try {
             const file = await fs.readFile(FILE_PATH, 'utf8');
             this.processedRows = new Set(JSON.parse(file));
@@ -33,51 +30,51 @@ export class MessageController{
     }
 
     async wasProcessed(rowId) {
-        return this.processedRows.has(rowId); 
+        return this.processedRows.has(rowId);
     }
 
-    async sendTemplate({phone, hotel, rowId, templateId}) {
+    async sendTemplate({ phone, hotel, rowId, templateId }) {
         if (!templateId) {
-            console.warn('[MessageController] No templateId, skip send', { phone, rowId }); 
-            return false
-        } 
-        const values = hotel ? [hotel] : []
-        
+            console.warn('[MessageController] No templateId, skip send', { phone, rowId });
+            return false;
+        }
+        const values = hotel ? [hotel] : [];
+
         try {
-            if (!(await this.wasProcessed(rowId))){
-                const req = await axios.post(this.apiURL,
+            if (!(await this.wasProcessed(rowId))) {
+                const payload = {
+                    channelId: this.channelId,
+                    chatType: 'whatsapp',
+                    chatId: phone,
+                    templateId,
+                    templateValues: values,
+                };
+
+                // console.log('[DEBUG] Payload:', JSON.stringify(payload, null, 2));
+                const req = await axios.post(
+                    this.apiURL,
                     {
                         channelId: this.channelId,
-                        chatType: "whatsapp",
+                        chatType: 'whatsapp',
                         chatId: phone,
                         templateId: templateId,
-                        templateValues: values
-                    }, 
+                        templateValues: values,
+                    },
                     {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${this.apiKey}`,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${this.apiKey}`,
                         },
                     }
                 );
-                if (req.status >= 200 && req.status < 300){
-                    console.log({message: "message sent", status: req.status, date: String(new Date())})
+                if (req.status >= 200 && req.status < 300) {
+                    console.log({ message: 'message sent', status: req.status, date: String(new Date()) });
                     await this.markProcessed(rowId);
-                    return true
+                    return true;
                 }
             }
         } catch (error) {
-            console.error('[MessageController] Message error:', {
-                message: error.message,
-                code: error.response?.status,
-                stack: error.stack,
-                data: error.response?.data
-            });
+            console.error('[MessageController] Message error:', JSON.stringify(error.response?.data ?? error.message, null, 2));
         }
     }
-    
-    async addUser(username, phone){
-
-    }
-
 }

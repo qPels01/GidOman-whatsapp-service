@@ -8,12 +8,14 @@ import { createHash } from 'node:crypto';
 import dotenv from 'dotenv';
 import { normalizeString } from '../utils/string.normalizer.js';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const ENV_PATH = join(__dirname, '../.env');
+
 const TOURS_PATH = join(__dirname, '../data/tours.json');
+
+dotenv.config({ path: ENV_PATH });
 
 const credentialsSheets = {
     SCOPES: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
@@ -22,7 +24,7 @@ const credentialsSheets = {
 
 const sheetsValues = {
     sheetId: process.env.SHEET_ID,
-    sheetRange: ['direct booking!C2:N'],
+    sheetRange: [process.env.SHEET_RANGE],
 };
 
 const messengerController = new MessageController(process.env.API_URL, process.env.WABA_API_KEY, process.env.CHANNEL_ID);
@@ -48,7 +50,7 @@ async function checkAndNotify() {
 
     try {
         for (let tourData of data) {
-            // console.log("len:", tourData.length, "ready:", tourData[10], "review:", tourData[11]);
+            // console.log('len:', tourData.length, 'ready:', tourData[10], 'review:', tourData[11], tourData[6], tourData[4]);
             const phone = tourData[6];
             if (!phone) continue;
 
@@ -69,7 +71,14 @@ async function checkAndNotify() {
 
             const cfg = toursList[matchKey];
 
-            const templateId = hasMeetingPoint ? cfg.with_meeting_point.templateID : cfg.with_pickup_hotel.templateID;
+            const templateConfig = hasMeetingPoint ? cfg.with_meeting_point : cfg.with_pickup_hotel;
+
+            if (!templateConfig?.templateID) {
+                console.warn('No template for tour:', tourName, '| meeting point:', hasMeetingPoint);
+                continue;
+            }
+
+            const templateId = templateConfig.templateID;
 
             const idSault = [normalizeString(phone), normalizeString(tourName), normalizeString(customerName), normalizeString(date)].join('|');
 
@@ -78,6 +87,7 @@ async function checkAndNotify() {
                 const rowId = createHash('md5')
                     .update(idSault + 'message')
                     .digest('hex');
+                // console.log('message sent!', phone);
                 await messengerController.sendTemplate({ phone, hotel, rowId, templateId });
             }
 
@@ -87,12 +97,16 @@ async function checkAndNotify() {
                     const rowId = createHash('md5')
                         .update(idSault + 'How was the tour?')
                         .digest('hex');
+
+                    // console.log('how was u tour message sent!', phone);
                     await messengerController.sendTemplate({ phone, rowId, templateId: process.env.REVIEW_MESSAGE });
                 } else if (review === 'Thank you') {
                     // console.log("is thankyou tour!");
                     const rowId = createHash('md5')
                         .update(idSault + 'Thank you')
                         .digest('hex');
+
+                    // console.log('thanks message sent!', phone);
                     await messengerController.sendTemplate({ phone, rowId, templateId: process.env.THANKYOU_MESSAGE });
                 }
             }
@@ -109,6 +123,8 @@ async function checkAndNotify() {
 }
 
 const INTERVAL_MS = 60 * 1000;
+
+await checkAndNotify();
 
 async function worker() {
     await messengerController.initProcessed();
