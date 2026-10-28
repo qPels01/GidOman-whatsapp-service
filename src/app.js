@@ -124,8 +124,6 @@ async function checkAndNotify() {
 
 const INTERVAL_MS = 60 * 1000;
 
-await checkAndNotify();
-
 async function worker() {
     await messengerController.initProcessed();
     while (true) {
