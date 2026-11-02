@@ -1,10 +1,12 @@
 {
     "Название тура": {
         "with_meeting_point": {
-            "templateID": "ID сообщения"
+            "templateID": "ID сообщения",
+            "image": "Ссылка на загрузку изображения"
         },
         "with_pickup_hotel": {
-            "templateID": "ID сообщения"
+            "templateID": "ID сообщения",
+            "image": "Ссылка на загрузку изображения"
         }
     }
 }

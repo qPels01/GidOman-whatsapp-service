@@ -7,6 +7,7 @@ import * as fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import dotenv from 'dotenv';
 import { normalizeString } from '../utils/string.normalizer.js';
+import { exec } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,7 +51,6 @@ async function checkAndNotify() {
 
     try {
         for (let tourData of data) {
-            // console.log('len:', tourData.length, 'ready:', tourData[10], 'review:', tourData[11], tourData[6], tourData[4]);
             const phone = tourData[6];
             if (!phone) continue;
 
@@ -73,8 +73,15 @@ async function checkAndNotify() {
 
             const templateConfig = hasMeetingPoint ? cfg.with_meeting_point : cfg.with_pickup_hotel;
 
+            const image = templateConfig?.image;
+
             if (!templateConfig?.templateID) {
                 console.warn('No template for tour:', tourName, '| meeting point:', hasMeetingPoint);
+                continue;
+            }
+
+            if (!templateConfig?.image) {
+                console.warn('No image for tour:', tourName);
                 continue;
             }
 
@@ -83,17 +90,20 @@ async function checkAndNotify() {
             const idSault = [normalizeString(phone), normalizeString(tourName), normalizeString(customerName), normalizeString(date)].join('|');
 
             if (typeof ready === 'string' && ready.trim().toLowerCase() === 'ready') {
-                // console.log("is ready tour!", tourName);
+                // console.log('is ready tour!', tourName);
+
                 const rowId = createHash('md5')
                     .update(idSault + 'message')
                     .digest('hex');
+
                 // console.log('message sent!', phone);
-                await messengerController.sendTemplate({ phone, hotel, rowId, templateId });
+                await messengerController.sendTemplate({ phone, hotel, image, rowId, templateId });
             }
 
             if (review) {
                 if (review === 'How was the tour?') {
                     // console.log("is review tour!");
+
                     const rowId = createHash('md5')
                         .update(idSault + 'How was the tour?')
                         .digest('hex');
@@ -102,6 +112,7 @@ async function checkAndNotify() {
                     await messengerController.sendTemplate({ phone, rowId, templateId: process.env.REVIEW_MESSAGE });
                 } else if (review === 'Thank you') {
                     // console.log("is thankyou tour!");
+
                     const rowId = createHash('md5')
                         .update(idSault + 'Thank you')
                         .digest('hex');

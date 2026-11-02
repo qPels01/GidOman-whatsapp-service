@@ -33,12 +33,12 @@ export class MessageController {
         return this.processedRows.has(rowId);
     }
 
-    async sendTemplate({ phone, hotel, rowId, templateId }) {
+    async sendTemplate({ phone, hotel, image, rowId, templateId }) {
         if (!templateId) {
             console.warn('[MessageController] No templateId, skip send', { phone, rowId });
             return false;
         }
-        const values = hotel ? [hotel] : [];
+        const values = hotel ? [image, hotel] : [image];
 
         try {
             if (!(await this.wasProcessed(rowId))) {

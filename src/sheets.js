@@ -45,7 +45,7 @@ export class SheetsController {
                 return filteredTours;
             }
 
-            return toursData;
+            return null;
         } catch (error) {
             console.error('[SheetsController] Ошибка при чтении таблицы:', {
                 message: error.message,
